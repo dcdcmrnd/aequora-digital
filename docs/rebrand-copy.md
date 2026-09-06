@@ -1,5 +1,10 @@
 # Aequora Digital — Rebrand Copy Deliverable
-Pricing basis: category anchors adjusted per founder decision (Websites $500 / Tools $1,000 / Automation $400). Tier bands otherwise per brief, with each category's entry tier raised to match its new anchor. Add-ons and website management ($299/mo) unchanged from brief defaults / current site.
+
+> **Superseded.** This was the first-pass planning doc for the rebrand. The live site (`main.html`, `about.html`, `what-we-build.html`) has since gone through many further rounds of copy and design changes — the pricing cards, the "What We Build" section, and the founder section on the live pages no longer match what's written below in structure or wording. Treat the live HTML as the source of truth; this file is kept for historical context only.
+>
+> Category starting prices as of the latest founder decision: **Websites & Landing Pages $700 · Internal Tools & Custom Apps $1,400 · Automation & Practical AI $500** (the $500/$1,000/$400 anchors and full tier-band structure below are the original, now-outdated figures).
+
+Pricing basis (original, outdated): category anchors adjusted per founder decision (Websites $500 / Tools $1,000 / Automation $400). Tier bands otherwise per brief, with each category's entry tier raised to match its new anchor. Add-ons and website management ($299/mo) unchanged from brief defaults / current site.
 
 ---
 
