@@ -2843,7 +2843,8 @@
       (function () {
         var root = document.getElementById("services");
         var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (root && !reduce) root.classList.add('wwd-enhanced');
+        var narrow = window.matchMedia('(max-width: 900px)').matches;
+        if (root && !reduce && !narrow) root.classList.add('wwd-enhanced');
       })();
     </script>
   </section>
