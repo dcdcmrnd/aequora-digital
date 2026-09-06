@@ -639,14 +639,14 @@
 
     /* ── SERVICES ── */
     .services-section {
-      padding: 96px 0;
+      padding: 64px 0;
       background: var(--bg-lt);
       border-top: 1px solid var(--border);
     }
     .services-head {
       text-align: center;
       max-width: 560px;
-      margin: 0 auto 52px;
+      margin: 0 auto 36px;
     }
     .services-head .section-label { justify-content: center; }
     .services-head h2 {
@@ -658,6 +658,13 @@
       margin-top: 6px;
     }
     .services-head h2 em { font-style: italic; font-weight: 300; color: var(--navy); }
+    .services-sub {
+      max-width: 480px;
+      margin: 16px auto 0;
+      font-size: 0.95rem;
+      color: var(--text-m);
+      line-height: 1.7;
+    }
     /* Circular number badge (reused by .service-card-primary) */
     .sc-badge {
       width: 48px; height: 48px;
@@ -2250,51 +2257,96 @@
       .services-primary-grid { grid-template-columns: 1fr; }
     }
 
-    /* ── WHAT WE DO: SCROLL-DRIVEN FLOATING CARDS ──
+    /* ── WHAT WE BUILD: SCROLL-DRIVEN ROW HIGHLIGHT ──
        .wwd-static (the original 3-card grid above) is the default/fallback: always what
        renders with JS off, and what prefers-reduced-motion users get. The pinned experience
        below is only switched on by the inline script right after its markup, which adds
        .wwd-enhanced to #services synchronously (no flash of the wrong version). */
     .wwd-wrapper { display: none; }
     #services.wwd-enhanced .wwd-static { display: none; }
+    #services.wwd-enhanced .services-head { display: none; }
     #services.wwd-enhanced .wwd-wrapper { display: block; }
 
-    .wwd-wrapper { position: relative; height: 400vh; }
-    .wwd-sticky { position: sticky; top: 0; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .wwd-scene { position: relative; width: 100%; height: 100%; max-width: var(--max-w); margin: 0 auto; }
+    .wwd-wrapper { position: relative; height: 260vh; }
+    .wwd-sticky {
+      position: sticky; top: 0;
+      height: min(100vh, 700px);
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding-top: calc(var(--hh) + 28px);
+      padding-bottom: 24px;
+      overflow: hidden;
+    }
+    /* Compact copy of .services-head shown only inside the pinned scene, so the eyebrow,
+       headline, and subhead stay visible above the cards for the whole scroll sequence
+       instead of scrolling away the moment the section pins. */
+    .wwd-head {
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 22px;
+      flex-shrink: 0;
+    }
+    .wwd-head .section-label { justify-content: center; }
+    .wwd-head h2 {
+      font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+      font-weight: 700;
+      color: var(--text-h);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+    .wwd-head h2 em { font-style: italic; font-weight: 300; color: var(--navy); }
+    .wwd-head .services-sub { margin-top: 10px; font-size: 0.86rem; }
+    .wwd-scene {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 28px;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 44px;
+    }
 
+    /* One straight row, no floating/repositioning -- scroll only changes which card is
+       highlighted (scale/lift/opacity via inline style each frame) and toggles .is-active
+       for the border/shadow transition below. Stretched (not centered) so all three cards
+       share one height regardless of how much each description wraps -- otherwise their
+       bottoms drift and the gap above the indicator reads as uneven per card. */
     .wwd-card {
-      position: absolute; top: 50%; left: 50%;
-      width: 300px; margin-left: -150px; margin-top: -130px;
+      position: relative;
+      width: 300px;
+      flex: 0 0 300px;
       background: none; padding: 0; text-align: left;
-      will-change: transform, opacity, filter;
+      will-change: transform, opacity;
     }
-    .wwd-card-float { animation: wwdFloat 9s ease-in-out infinite; }
-    .wwd-card[data-index="0"] .wwd-card-float { animation-duration: 8s; animation-delay: 0s; }
-    .wwd-card[data-index="1"] .wwd-card-float { animation-duration: 9s; animation-delay: -3s; }
-    .wwd-card[data-index="2"] .wwd-card-float { animation-duration: 10s; animation-delay: -6s; }
-    @keyframes wwdFloat {
-      0%, 100% { transform: translate3d(0,0,0) rotate(0deg); }
-      50%      { transform: translate3d(5px,-9px,0) rotate(1deg); }
-    }
+    .wwd-card-float, .wwd-card-hover { height: 100%; }
 
     .wwd-card-hover { transition: transform 0.3s cubic-bezier(0.22,1,0.36,1); }
     .wwd-card:hover .wwd-card-hover, .wwd-card:focus-visible .wwd-card-hover { transform: translateY(-6px); }
 
     .wwd-card-body {
       position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
       background: var(--white);
       border: 1.5px solid rgba(13,92,122,0.2);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-md);
       padding: 28px 26px 24px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .wwd-card.is-active .wwd-card-body {
+      border-color: rgba(13,92,122,0.4);
+      box-shadow: var(--shadow-lg);
     }
     .wwd-visual { position: absolute; top: -18px; right: -18px; width: 130px; height: 96px; opacity: 0.9; transform: rotate(3deg); pointer-events: none; }
     .wwd-num { display: block; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.2em; color: var(--navy); }
     .wwd-card-body h3 { margin-top: 14px; font-size: 1.25rem; font-weight: 700; color: var(--text-h); line-height: 1.25; letter-spacing: -0.015em; }
-    .wwd-card-body p { margin-top: 10px; max-width: 220px; font-size: 0.88rem; color: var(--text-m); line-height: 1.75; }
-    .wwd-explore { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; font-size: 0.85rem; font-weight: 700; color: var(--text-m); transition: color 0.2s; }
+    .wwd-card-body p { margin-top: 10px; max-width: 220px; font-size: 0.88rem; color: var(--text-b); line-height: 1.75; }
+    .wwd-explore { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 18px; font-size: 0.85rem; font-weight: 700; color: var(--text-m); transition: color 0.2s; }
     .wwd-card:hover .wwd-explore, .wwd-card:focus-visible .wwd-explore { color: var(--navy); }
     .wwd-explore span { display: inline-block; transition: transform 0.2s; }
     .wwd-card:hover .wwd-explore span, .wwd-card:focus-visible .wwd-explore span { transform: translateX(3px); }
@@ -2306,11 +2358,11 @@
     .wwd-indicator-dot { position: absolute; top: -3px; left: 0%; width: 7px; height: 7px; border-radius: 50%; background: var(--navy); transform: translateX(-50%); }
 
     @media (max-width: 900px) {
-      .wwd-card { width: 260px; margin-left: -130px; margin-top: -120px; }
+      .wwd-scene { flex-direction: column; gap: 20px; padding: 0 24px; }
+      .wwd-card { width: 100%; max-width: 340px; flex: 0 0 auto; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .wwd-card-float { animation: none; }
       .wwd-card-hover { transition: none; }
     }
 
@@ -2328,12 +2380,10 @@
 
     /* ── VERIFIED REVIEWS (DesignRush) ── */
     .reviews-widget-wrap {
-      min-height: 420px; /* reserves space so the widget hydrating in doesn't shift the page */
-      background: var(--white);
-      border: 1.5px solid rgba(13,92,122,0.2);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: 24px;
+      min-height: 100px; /* just enough to reserve space for the badge, not a full carousel */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .reviews-noscript-link {
       display: inline-block;
@@ -2361,22 +2411,27 @@
       max-width: 660px;
       margin: 0 auto 52px;
       font-size: 0.94rem;
-      color: var(--text-m);
+      color: var(--text-b);
       line-height: 1.8;
     }
+    #pricing .container { max-width: 1400px; }
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 24px;
-      max-width: 1080px;
+      max-width: 1320px;
       margin: 0 auto;
     }
     .pricing-card {
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding: 40px 34px;
+      padding: 36px 32px 32px;
+      border-top: 3px solid var(--accent, var(--navy));
     }
+    .pricing-card:nth-child(1) { --accent: var(--navy); }
+    .pricing-card:nth-child(2) { --accent: var(--navy-lt); }
+    .pricing-card:nth-child(3) { --accent: var(--terra); }
     .pricing-card h3 { font-size: 1.3rem; }
     .pricing-price {
       font-size: 1.5rem;
@@ -2384,45 +2439,77 @@
       color: var(--navy);
       letter-spacing: -0.01em;
     }
-    .pricing-range {
-      display: block;
+    .pricing-tagline {
+      font-size: 0.88rem;
+      color: var(--text-b);
+      line-height: 1.7;
+    }
+    .pricing-deliverables-label {
+      margin-top: 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent, var(--navy));
+    }
+    .pricing-chips {
+      margin-top: -4px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .pricing-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(13,92,122,0.08);
+      background: color-mix(in srgb, var(--accent, var(--navy)) 10%, var(--white));
       font-size: 0.78rem;
       font-weight: 600;
-      color: var(--text-m);
-      letter-spacing: 0;
+      color: var(--text-b);
+    }
+    .pricing-scope-note {
+      margin-top: -6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-style: italic;
+      color: var(--text-b);
+    }
+    .pricing-bestfor {
       margin-top: 4px;
-    }
-    .pricing-card > p { margin-top: -6px; }
-    .feature-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 4px 0 8px;
-    }
-    .feature-list li {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      font-size: 0.87rem;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(13,92,122,0.06);
+      background: color-mix(in srgb, var(--accent, var(--navy)) 7%, var(--white));
+      font-size: 0.86rem;
       color: var(--text-b);
       line-height: 1.6;
     }
-    .feature-list li::before {
-      content: "";
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--terra);
-      flex-shrink: 0;
-      margin-top: 7px;
-    }
-    .pricing-note {
+    .pricing-closing {
       text-align: center;
-      max-width: 640px;
-      margin: 40px auto 0;
-      font-size: 0.86rem;
-      color: var(--text-m);
-      line-height: 1.7;
+      max-width: 620px;
+      margin: 48px auto 0;
     }
+    .pricing-closing h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-h);
+      margin-bottom: 12px;
+    }
+    .pricing-closing p {
+      font-size: 0.92rem;
+      color: var(--text-m);
+      line-height: 1.75;
+    }
+    .pricing-closing-bold {
+      font-weight: 700;
+      color: var(--text-h);
+      margin-top: 10px;
+    }
+    .pricing-closing .btn-primary { margin-top: 20px; }
     @media (max-width: 900px) {
       .pricing-grid { grid-template-columns: 1fr; }
     }
@@ -2630,8 +2717,9 @@
   <section id="services" class="services-section">
     <div class="container">
       <div class="services-head" data-reveal>
-        <p class="section-label" style="justify-content:center">What We Do</p>
-        <h2>Three layers. <em>Built to work together.</em></h2>
+        <p class="section-label" style="justify-content:center">What We Build</p>
+        <h2>Three layers.<br><em>One connected system.</em></h2>
+        <p class="services-sub">Start with one. Add the others when you're ready.</p>
       </div>
 
       <!-- Default/fallback: always what renders with JS off or prefers-reduced-motion. -->
@@ -2639,17 +2727,17 @@
         <article class="service-card-primary" data-reveal data-delay="1">
           <div class="sc-badge">01</div>
           <h3>Websites & Landing Pages</h3>
-          <p>Sites built to convert, load fast, and rank.</p>
+          <p>What your customers see. Fast, search-ready, and easy to act on.</p>
         </article>
         <article class="service-card-primary" data-reveal data-delay="2">
           <div class="sc-badge">02</div>
           <h3>Internal Tools & Custom Apps</h3>
-          <p>Software that runs a part of your business.</p>
+          <p>What your team uses. Software shaped around how you already work.</p>
         </article>
         <article class="service-card-primary" data-reveal data-delay="3">
           <div class="sc-badge">03</div>
-          <h3>Automation, Integrations & Practical AI</h3>
-          <p>Workflows and AI features that remove manual work, with a human review layer.</p>
+          <h3>Automation & Practical AI</h3>
+          <p>What connects them. Your systems talk to each other, so nobody re-enters the same data twice.</p>
         </article>
       </div>
     </div>
@@ -2658,8 +2746,13 @@
          inline script right below, which toggles #services's .wwd-enhanced class before paint). -->
     <div class="wwd-wrapper" id="wwd-wrapper">
       <div class="wwd-sticky">
+        <div class="wwd-head">
+          <p class="section-label" style="justify-content:center">What We Build</p>
+          <h2>Three layers. <em>One connected system.</em></h2>
+          <p class="services-sub">Start with one. Add the others when you're ready.</p>
+        </div>
         <div class="wwd-scene">
-          <button type="button" class="wwd-card" data-index="0" aria-label="Explore Websites & Landing Pages">
+          <button type="button" class="wwd-card" data-index="0" aria-label="Websites &amp; Landing Pages: what your customers see, fast, search-ready, and easy to act on">
             <div class="wwd-card-float">
               <div class="wwd-card-hover">
                 <div class="wwd-card-body">
@@ -2676,14 +2769,14 @@
                   </svg>
                   <span class="wwd-num">01</span>
                   <h3>Websites &amp;<br>Landing Pages</h3>
-                  <p>Sites built to convert, load fast, and rank.</p>
-                  <span class="wwd-explore">Explore <span aria-hidden="true">&rarr;</span></span>
+                  <p>What your customers see. Fast, search-ready, and easy to act on.</p>
+                  <span class="wwd-explore">Explore websites <span aria-hidden="true">&rarr;</span></span>
                 </div>
               </div>
             </div>
           </button>
 
-          <button type="button" class="wwd-card" data-index="1" aria-label="Explore Internal Tools & Custom Apps">
+          <button type="button" class="wwd-card" data-index="1" aria-label="Internal Tools &amp; Custom Apps: what your team uses, software shaped around how you already work">
             <div class="wwd-card-float">
               <div class="wwd-card-hover">
                 <div class="wwd-card-body">
@@ -2705,14 +2798,14 @@
                   </svg>
                   <span class="wwd-num">02</span>
                   <h3>Internal Tools &amp;<br>Custom Apps</h3>
-                  <p>Software that runs a part of your business.</p>
-                  <span class="wwd-explore">Explore <span aria-hidden="true">&rarr;</span></span>
+                  <p>What your team uses. Software shaped around how you already work.</p>
+                  <span class="wwd-explore">Explore internal tools <span aria-hidden="true">&rarr;</span></span>
                 </div>
               </div>
             </div>
           </button>
 
-          <button type="button" class="wwd-card" data-index="2" aria-label="Explore Automation, Integrations & Practical AI">
+          <button type="button" class="wwd-card" data-index="2" aria-label="Automation &amp; Practical AI: what connects them, your systems talk to each other so nobody re-enters the same data twice">
             <div class="wwd-card-float">
               <div class="wwd-card-hover">
                 <div class="wwd-card-body">
@@ -2728,9 +2821,9 @@
                     <circle cx="70" cy="50" r="4" fill="var(--white)" />
                   </svg>
                   <span class="wwd-num">03</span>
-                  <h3>Automation, Integrations<br>&amp; Practical AI</h3>
-                  <p>Workflows and AI features that remove manual work, with a human review layer.</p>
-                  <span class="wwd-explore">Explore <span aria-hidden="true">&rarr;</span></span>
+                  <h3>Automation &amp;<br>Practical AI</h3>
+                  <p>What connects them. Your systems talk to each other, so nobody re-enters the same data twice.</p>
+                  <span class="wwd-explore">Explore automation <span aria-hidden="true">&rarr;</span></span>
                 </div>
               </div>
             </div>
@@ -2761,56 +2854,84 @@
   <section id="pricing" class="pricing-section">
     <div class="container">
       <div class="pricing-head" data-reveal>
-        <p class="section-label" style="justify-content:center">Working Together</p>
-        <h2>Pricing, <em>published up front.</em></h2>
+        <p class="section-label" style="justify-content:center">Pricing</p>
+        <h2>Clear pricing.<br><em>No surprises.</em></h2>
       </div>
-      <p class="pricing-intro" data-reveal data-delay="1">We publish real starting prices so you can judge budget fit before you reach out. Every quote is fixed and confirmed after a short scope review, not guessed from a form.</p>
+      <p class="pricing-intro" data-reveal data-delay="1">We publish starting prices so you can see if we're a fit before you reach out. Every project is scoped around your business and confirmed with a fixed proposal before we build.</p>
 
       <div class="pricing-grid">
         <article class="service-card-primary pricing-card" data-reveal data-delay="1">
           <div class="sc-badge">01</div>
           <h3>Websites & Landing Pages</h3>
-          <p class="pricing-price">Starting at $500<span class="pricing-range">Typical range $500–$3,000+</span></p>
-          <p>Sites built to convert, load fast, and rank.</p>
-          <ul class="feature-list">
-            <li>Launch pages, business sites, and multi-page builds</li>
-            <li>Responsive frontend and SEO-ready structure</li>
-            <li>Speed optimization and technical SEO foundations</li>
-            <li>CMS setup when you need to edit content yourself</li>
-          </ul>
-          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Tell us what you need</a>
+          <p class="pricing-tagline">Fast, search-ready, and built to make contacting you easy.</p>
+          <p class="pricing-bestfor">Best for businesses losing work to a slow, dated, or hard-to-find site.</p>
+          <p class="pricing-price">From $500</p>
+          <p class="pricing-deliverables-label">Typically includes</p>
+          <div class="pricing-chips">
+            <span class="pricing-chip">Website design</span>
+            <span class="pricing-chip">Landing pages</span>
+            <span class="pricing-chip">CMS setup</span>
+            <span class="pricing-chip">Lead capture forms</span>
+            <span class="pricing-chip">Booking &amp; scheduling</span>
+            <span class="pricing-chip">Technical SEO</span>
+            <span class="pricing-chip">Speed optimization</span>
+            <span class="pricing-chip">Analytics</span>
+          </div>
+          <p class="pricing-scope-note">+ more based on scope</p>
+          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Talk about your site <span aria-hidden="true">&rarr;</span></a>
         </article>
 
         <article class="service-card-primary pricing-card" data-reveal data-delay="2">
           <div class="sc-badge">02</div>
           <h3>Internal Tools & Custom Apps</h3>
-          <p class="pricing-price">Starting at $1,000<span class="pricing-range">Typical range $1,000–$7,000+</span></p>
-          <p>Software that runs a part of your business.</p>
-          <ul class="feature-list">
-            <li>Dashboards, admin panels, and client portals</li>
-            <li>Role-based access and workflow logic</li>
-            <li>Reporting and integrations with tools you already use</li>
-            <li>Documentation and handoff, not dependency on us</li>
-          </ul>
-          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Tell us what you need</a>
+          <p class="pricing-tagline">Software shaped around how your team already works.</p>
+          <p class="pricing-bestfor">Best for teams that have outgrown spreadsheets and off-the-shelf software.</p>
+          <p class="pricing-price">From $1,000</p>
+          <p class="pricing-deliverables-label">Typically includes</p>
+          <div class="pricing-chips">
+            <span class="pricing-chip">Web applications</span>
+            <span class="pricing-chip">Admin dashboards</span>
+            <span class="pricing-chip">Client portals</span>
+            <span class="pricing-chip">User logins</span>
+            <span class="pricing-chip">Database design</span>
+            <span class="pricing-chip">Role-based access</span>
+            <span class="pricing-chip">API integrations</span>
+            <span class="pricing-chip">Workflows</span>
+          </div>
+          <p class="pricing-scope-note">+ more based on scope</p>
+          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Talk through your workflow <span aria-hidden="true">&rarr;</span></a>
         </article>
 
         <article class="service-card-primary pricing-card" data-reveal data-delay="3">
           <div class="sc-badge">03</div>
-          <h3>Automation, Integrations & Practical AI</h3>
-          <p class="pricing-price">Starting at $400<span class="pricing-range">Typical range $400–$3,000+</span></p>
-          <p>Workflows and AI features that remove manual work.</p>
-          <ul class="feature-list">
-            <li>Workflow automation and app-to-app integrations</li>
-            <li>API and webhook connections, alerts and notifications</li>
-            <li>AI summaries, extraction, drafting, and categorization</li>
-            <li>A human review layer wherever it's needed</li>
-          </ul>
-          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Tell us what you need</a>
+          <h3>Automation & Practical AI</h3>
+          <p class="pricing-tagline">Connects your systems and takes the repetitive work off your team.</p>
+          <p class="pricing-bestfor">Best for teams re-entering the same data in three different places.</p>
+          <p class="pricing-price">From $400</p>
+          <p class="pricing-deliverables-label">Typically includes</p>
+          <div class="pricing-chips">
+            <span class="pricing-chip">Workflow automation</span>
+            <span class="pricing-chip">App integrations</span>
+            <span class="pricing-chip">CRM automation</span>
+            <span class="pricing-chip">GoHighLevel setup</span>
+            <span class="pricing-chip">Funnels &amp; pipelines</span>
+            <span class="pricing-chip">Lead routing</span>
+            <span class="pricing-chip">Data sync</span>
+            <span class="pricing-chip">AI summaries</span>
+            <span class="pricing-chip">Document drafting</span>
+            <span class="pricing-chip">Human review</span>
+          </div>
+          <p class="pricing-scope-note">+ more based on scope</p>
+          <a href="#contact-form" class="btn-primary" style="align-self:flex-start;margin-top:auto;">Tell us what's manual <span aria-hidden="true">&rarr;</span></a>
         </article>
       </div>
 
-      <p class="pricing-note" data-reveal data-delay="4">Starting prices and typical ranges are published so you can judge budget fit before reaching out. Every quote is confirmed after a short scope review. Website Management ($299/month) and Google Ads Management ($300/month plus ad spend) are also available for businesses that want ongoing support after launch.</p>
+      <div class="pricing-closing" data-reveal data-delay="4">
+        <h3>Every project is different.</h3>
+        <p>Your starting price gives you a clear idea of the investment. After a short scope review, we'll give you a fixed proposal that clearly outlines what's included.</p>
+        <p class="pricing-closing-bold">No surprise invoices. No unnecessary packages. No pressure to buy more than you need.</p>
+        <a href="#contact-form" class="btn-primary">Let's talk about your project <span aria-hidden="true">&rarr;</span></a>
+      </div>
     </div>
   </section>
 
@@ -3469,36 +3590,35 @@
     }));
   })();
 
-  /* ── WHAT WE DO: SCROLL-DRIVEN FLOATING CARDS ──
+  /* ── WHAT WE BUILD: SCROLL-DRIVEN ROW HIGHLIGHT ──
      Only runs when #services carries .wwd-enhanced (set synchronously, before paint, by the
      inline script right after the section's markup -- gated on prefers-reduced-motion there).
-     Progress (0..1) comes from how far scrolled through the tall #wwd-wrapper the sticky child
-     stays pinned for; each card's "prominence" (0 = idle/secondary, 1 = fully hero) is a smooth
-     curve keyed to that progress, overlapping slightly so handoffs are continuous. Writes
-     transform/opacity/filter straight to each card's style every rAF tick -- no state, no
-     re-render, GPU-friendly transforms only. */
+     Cards sit in one static row; progress (0..1) comes from how far scrolled through the tall
+     #wwd-wrapper the sticky child stays pinned for, and just decides which card is currently
+     highlighted via scale/lift/opacity, overlapping slightly so handoffs are continuous. Writes
+     transform/opacity straight to each card's style every rAF tick -- no state, no re-render,
+     GPU-friendly transforms only. */
   (function () {
     var section = document.getElementById('services');
     var wrapper = document.getElementById('wwd-wrapper');
     if (!section || !wrapper || !section.classList.contains('wwd-enhanced')) return;
+    var sticky = wrapper.querySelector('.wwd-sticky');
 
     var cards = Array.prototype.slice.call(section.querySelectorAll('.wwd-card'));
     var dot = document.getElementById('wwd-dot');
     var indicatorNums = Array.prototype.slice.call(section.querySelectorAll('.wwd-indicator-num'));
 
-    var IDLE_DESKTOP = [
-      { xFrac: -0.17, yFrac: 0.11, rotate: -4 },
-      { xFrac: 0.15, yFrac: 0.15, rotate: 4 },
-      { xFrac: 0.21, yFrac: -0.17, rotate: -3 }
-    ];
-    var IDLE_MOBILE = [
-      { xFrac: 0, yFrac: -0.19, rotate: -2 },
-      { xFrac: 0.05, yFrac: 0.01, rotate: 1.5 },
-      { xFrac: -0.03, yFrac: 0.2, rotate: -1.5 }
-    ];
-    var CENTERS = [0.2, 0.5, 0.8];
-    var PLATEAU = 0.05, FALLOFF = 0.12;
-    var HERO_SCALE_DESKTOP = 1.42, HERO_SCALE_MOBILE = 1.16;
+    /* Cards sit in one static row -- scroll only decides which one is "active" (0..1
+       prominence). Centers span the full 0..1 range so card 01 is already highlighted the
+       instant the section pins, 02 takes over at the midpoint, 03 at the very end. Plateau
+       + falloff sums to 0.5 (the center spacing) so each handoff reaches exactly 0 right as
+       its neighbor peaks: one continuous crossfade, not three independent animations. */
+    var CENTERS = [0, 0.5, 1];
+    var PLATEAU = 0.04, FALLOFF = 0.46;
+    /* Last stretch of the scroll range eases all three cards toward one balanced, neutral
+       prominence instead of holding 03 highlighted forever -- a settle beat before the
+       section releases into Working Together. */
+    var SEQUENCE_END = 0.88, SETTLE_PROMINENCE = 0.4;
 
     function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
     function lerp(a, b, t) { return a + (b - a) * t; }
@@ -3510,56 +3630,41 @@
       return easeInOut(1 - (d - plateau) / falloff);
     }
 
-    var isMobile = false;
-    var idlePx = [];
-    function recomputeIdle() {
-      isMobile = window.matchMedia('(max-width: 767px)').matches;
-      var vw = window.innerWidth, vh = window.innerHeight;
-      var preset = isMobile ? IDLE_MOBILE : IDLE_DESKTOP;
-      idlePx = preset.map(function (p) { return { x: p.xFrac * vw, y: p.yFrac * vh, rotate: p.rotate }; });
-    }
-
     function applyFrame(progress) {
-      var heroScale = isMobile ? HERO_SCALE_MOBILE : HERO_SCALE_DESKTOP;
-      var proms = CENTERS.map(function (c) { return prominence(progress, c, PLATEAU, FALLOFF); });
-      var globalActivity = Math.max.apply(null, proms);
+      var sequenceP = clamp(progress / SEQUENCE_END, 0, 1);
+      var settleT = clamp((progress - SEQUENCE_END) / (1 - SEQUENCE_END), 0, 1);
+      var rawProms = CENTERS.map(function (c) { return prominence(sequenceP, c, PLATEAU, FALLOFF); });
+      var proms = rawProms.map(function (p) { return lerp(p, SETTLE_PROMINENCE, settleT); });
 
       cards.forEach(function (card, i) {
-        var idle = idlePx[i];
         var p = proms[i];
-        var secondary = globalActivity * (1 - p);
-        var scale = lerp(1, heroScale, p) * lerp(1, 0.86, secondary);
-        var tx = lerp(idle.x, 0, p) + idle.x * 0.18 * secondary;
-        var ty = lerp(idle.y, 0, p) + idle.y * 0.18 * secondary;
-        var rotate = lerp(idle.rotate, 0, p);
-        var opacity = 1 - 0.42 * secondary;
-        var blur = 1.4 * secondary;
-        card.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0) scale(' + scale.toFixed(3) + ') rotate(' + rotate.toFixed(2) + 'deg)';
+        var scale = lerp(0.94, 1.07, p);
+        var lift = lerp(6, -10, p);
+        var opacity = lerp(0.88, 1, p);
+        card.style.transform = 'translate3d(0,' + lift.toFixed(2) + 'px,0) scale(' + scale.toFixed(3) + ')';
         card.style.opacity = opacity.toFixed(3);
-        card.style.filter = blur > 0.05 ? 'blur(' + blur.toFixed(2) + 'px)' : 'none';
         card.style.zIndex = String(Math.round(10 + p * 30));
+        card.classList.toggle('is-active', p > 0.55);
       });
 
       if (dot) dot.style.left = (clamp(progress, 0, 1) * 100).toFixed(2) + '%';
       indicatorNums.forEach(function (el, i) {
-        el.classList.toggle('is-active', proms[Number(el.dataset.i)] > 0.5);
+        el.classList.toggle('is-active', rawProms[Number(el.dataset.i)] > 0.5);
       });
     }
 
-    recomputeIdle();
     var frame = 0;
     function tick() {
       frame = 0;
       var rect = wrapper.getBoundingClientRect();
-      var total = wrapper.offsetHeight - window.innerHeight;
+      var total = wrapper.offsetHeight - (sticky ? sticky.offsetHeight : window.innerHeight);
       var raw = total > 0 ? -rect.top / total : 0;
       applyFrame(clamp(raw, 0, 1));
     }
     function onScroll() { if (!frame) frame = requestAnimationFrame(tick); }
-    function onResize() { recomputeIdle(); onScroll(); }
     tick();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', onScroll);
   })();
 
   /* ── CARD CURSOR GLOW ── */
